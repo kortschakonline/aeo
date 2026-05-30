@@ -13,5 +13,7 @@ describe('runScan', () => {
     expect(r.total).toBeLessThanOrEqual(100)
     expect(r.categories).toHaveLength(4)
     expect(r.checks.length).toBeGreaterThan(5)
+    expect(typeof r.contentExcerpt).toBe('string')
+    expect(r.contentExcerpt!.length).toBeGreaterThan(0)
   })
 })

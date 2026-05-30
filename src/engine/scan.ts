@@ -5,6 +5,7 @@ import { technikChecks } from '@/src/engine/checks/technik'
 import { auffindbarkeitChecks } from '@/src/engine/checks/auffindbarkeit'
 import { contentChecks } from '@/src/engine/checks/content'
 import { scoreScan } from '@/src/engine/scoring'
+import { extractText } from '@/src/engine/text'
 import type { ScanContext, ScanResult } from '@/src/engine/types'
 
 export interface ScanDeps {
@@ -22,5 +23,6 @@ export async function runScan(input: string, deps: ScanDeps = {}): Promise<ScanR
   const ctx: ScanContext = { url, domain, html, responseMs, ...aux }
 
   const checks = [...technikChecks(ctx), ...auffindbarkeitChecks(ctx), ...contentChecks(ctx)]
-  return scoreScan(url, domain, checks)
+  const result = scoreScan(url, domain, checks)
+  return { ...result, contentExcerpt: extractText(html) }
 }

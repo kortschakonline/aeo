@@ -27,4 +27,5 @@ export interface ScanResult {
   total: number                 // 0..100
   categories: CategoryScore[]
   checks: CheckResult[]
+  contentExcerpt?: string
 }
