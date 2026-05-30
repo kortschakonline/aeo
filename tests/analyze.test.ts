@@ -23,9 +23,10 @@ describe('analyzeContent', () => {
     expect(r.dimensions).toHaveLength(3)
     expect(r.overallSummary).toBe('Solide Basis.')
     expect(client.messages.create).toHaveBeenCalledOnce()
-    const arg = client.messages.create.mock.calls[0][0]
-    expect(arg.model).toBe('test-model')
-    expect(arg.tool_choice).toEqual({ type: 'tool', name: 'report' })
+    const calls = client.messages.create.mock.calls as unknown as Array<[Record<string, unknown>]>
+    const arg = calls[0]![0]!
+    expect(arg['model']).toBe('test-model')
+    expect(arg['tool_choice']).toEqual({ type: 'tool', name: 'report' })
   })
   it('wirft bei ungültiger Tool-Ausgabe', async () => {
     const client = fakeClient({ dimensions: [], strengths: [], improvements: [], overallSummary: '' })
