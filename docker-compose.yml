@@ -3,6 +3,7 @@
 # App und DB liegen auf dem (compose-default) Netzwerk; Traefik findet die App über den Docker-Socket.
 services:
   app:
+    image: ghcr.io/kortschakonline/aeo:latest
     build: .
     restart: unless-stopped
     environment:
