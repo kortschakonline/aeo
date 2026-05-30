@@ -7,6 +7,8 @@ export const scans = pgTable('scans', {
   total: integer('total').notNull(),
   categories: jsonb('categories').notNull(),
   checks: jsonb('checks').notNull(),
+  contentExcerpt: text('content_excerpt'),
+  aiAnalysis: jsonb('ai_analysis'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 

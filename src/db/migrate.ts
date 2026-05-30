@@ -28,6 +28,8 @@ export function ensureSchema(): Promise<void> {
           notified_at timestamp
         )
       `)
+      await db.execute(sql`ALTER TABLE scans ADD COLUMN IF NOT EXISTS content_excerpt text`)
+      await db.execute(sql`ALTER TABLE scans ADD COLUMN IF NOT EXISTS ai_analysis jsonb`)
     })().catch((e) => {
       ensured = null // bei Fehler erneut versuchen
       throw e
