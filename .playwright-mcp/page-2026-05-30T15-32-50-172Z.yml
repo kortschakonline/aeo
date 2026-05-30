@@ -1,0 +1,15 @@
+- main [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: Answer Engine Optimization
+      - heading "Findet die KI deine Website?" [level=1] [ref=e7]:
+        - text: Findet die KI
+        - text: deine Website?
+      - paragraph [ref=e8]: AEO ist das neue SEO. Wir prüfen in Sekunden, ob ChatGPT, Perplexity und Google AI deine Seite finden, verstehen und zitieren können.
+      - generic [ref=e9]:
+        - generic [ref=e10]: Website-URL
+        - textbox "Website-URL" [ref=e11]:
+          - /placeholder: deine-website.de
+        - button "Scan starten" [disabled] [ref=e12]
+      - paragraph [ref=e13]: Kostenlos · ~15 Sekunden · keine Anmeldung
+    - generic [ref=e14]: kortschak
