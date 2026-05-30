@@ -74,8 +74,10 @@ export async function runBrandVisibility(content: string, domain: string, deps: 
   const appeared = results.filter((r) => r.appeared).length
   const score = results.length ? Math.round((100 * appeared) / results.length) : 0
   const dom = domain.replace(/^www\./, '').toLowerCase()
+  const brandTokens = brandName.toLowerCase().split(/\s+/).filter((t) => t.length >= 4)
+  const isOwn = (d: string) => d.includes(dom) || brandTokens.some((t) => d.includes(t))
   const competitors = dedupe(
-    results.flatMap((r) => r.sources).map(domainFromSource).filter((d) => d !== '' && !d.includes(dom)),
+    results.flatMap((r) => r.sources).map(domainFromSource).filter((d) => d !== '' && !isOwn(d)),
   ).slice(0, 8)
 
   return { brandName, score, questions: results, competitors }

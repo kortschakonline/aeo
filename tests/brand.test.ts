@@ -53,6 +53,28 @@ describe('runBrandVisibility', () => {
     expect(r.competitors).not.toContain('kortschak.online')
   })
 
+  it('schließt eigene Marken-Domains aus den Mitbewerbern aus', async () => {
+    const client = {
+      messages: {
+        create: vi.fn(async (params: any) => {
+          if (params.tools?.[0]?.type === 'web_search_20250305') {
+            return { content: [
+              { type: 'text', text: 'Anbieter.', citations: [] },
+              { type: 'web_search_tool_result', content: [
+                { url: 'https://schriften-kortschak.at/', title: 'Zweitseite' },
+                { url: 'https://echter-konkurrent.at/', title: 'Konkurrent' },
+              ] },
+            ] }
+          }
+          return { content: [{ type: 'tool_use', name: 'questions', input: { brandName: 'Kortschak Schriften', questions: ['F1?'] } }] }
+        }),
+      },
+    }
+    const r = await runBrandVisibility('c', 'kortschak.online', { client, model: 'm' })
+    expect(r.competitors).toContain('echter-konkurrent.at')
+    expect(r.competitors).not.toContain('schriften-kortschak.at')
+  })
+
   it('fängt Fehler einer einzelnen Websuche ab (zählt als nicht erschienen)', async () => {
     const client = {
       messages: {
