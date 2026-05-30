@@ -2,6 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { CATEGORY_LABELS, type Category, type Check } from "./types";
+import { AiAnalysis, type AiAnalysisData } from "./AiAnalysis";
+
+interface LeadResponse {
+  ok?: boolean;
+  aiAnalysis?: AiAnalysisData | null;
+  aiError?: boolean;
+}
 
 interface EmailGateProps {
   scanId: number;
@@ -91,6 +98,8 @@ export default function EmailGate({
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [aiAnalysis, setAiAnalysis] = useState<AiAnalysisData | null>(null);
+  const [aiError, setAiError] = useState(false);
 
   const groups = useMemo(() => groupChecks(checks), [checks]);
 
@@ -111,6 +120,9 @@ export default function EmailGate({
       if (!res.ok) {
         throw new Error("lead failed");
       }
+      const data: LeadResponse = await res.json().catch(() => ({}));
+      setAiAnalysis(data.aiAnalysis ?? null);
+      setAiError(Boolean(data.aiError) || data.aiAnalysis == null);
       onUnlock();
     } catch {
       setError("Etwas ist schiefgelaufen. Bitte versuche es erneut.");
@@ -205,6 +217,9 @@ export default function EmailGate({
           </div>
         )}
       </div>
+
+      {/* AI content analysis — between detailed checks and the CTA */}
+      {unlocked && <AiAnalysis data={aiAnalysis} error={aiError} />}
 
       {/* CTA after unlock */}
       {unlocked && (
