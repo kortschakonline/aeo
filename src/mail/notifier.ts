@@ -2,9 +2,11 @@ import nodemailer from 'nodemailer'
 
 export async function notifyLead(email: string, domain: string, total: number): Promise<void> {
   if (!process.env.SMTP_HOST) { console.warn('SMTP nicht konfiguriert, überspringe Mail'); return }
+  const port = Number(process.env.SMTP_PORT ?? 587)
   const transport = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT ?? 587),
+    port,
+    secure: port === 465, // 465 = implizites TLS, 587 = STARTTLS
     auth: { user: process.env.SMTP_USER!, pass: process.env.SMTP_PASS! },
   })
   await transport.sendMail({
