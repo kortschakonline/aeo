@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm'
 import { ensureSchema } from '@/src/db/migrate'
 import type { ScanResult } from '@/src/engine/types'
 import type { AiAnalysis } from '@/src/ai/types'
+import type { BrandVisibility } from '@/src/ai/types'
 
 export async function saveScan(r: ScanResult): Promise<number> {
   await ensureSchema()
@@ -30,4 +31,9 @@ export async function saveLead(scanId: number, email: string): Promise<number> {
 export async function saveAiAnalysis(scanId: number, analysis: AiAnalysis): Promise<void> {
   await ensureSchema()
   await db.update(scans).set({ aiAnalysis: analysis }).where(eq(scans.id, scanId))
+}
+
+export async function saveBrandVisibility(scanId: number, data: BrandVisibility): Promise<void> {
+  await ensureSchema()
+  await db.update(scans).set({ brandVisibility: data }).where(eq(scans.id, scanId))
 }

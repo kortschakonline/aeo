@@ -9,6 +9,7 @@ export const scans = pgTable('scans', {
   checks: jsonb('checks').notNull(),
   contentExcerpt: text('content_excerpt'),
   aiAnalysis: jsonb('ai_analysis'),
+  brandVisibility: jsonb('brand_visibility'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
