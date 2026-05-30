@@ -1,8 +1,17 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CATEGORY_LABELS, type Category, type Check } from "./types";
 import { AiAnalysis, type AiAnalysisData } from "./AiAnalysis";
+import {
+  BrandVisibility,
+  type BrandVisibilityData,
+} from "./BrandVisibility";
+
+interface BrandResponse {
+  brandVisibility?: BrandVisibilityData | null;
+  error?: boolean;
+}
 
 interface LeadResponse {
   ok?: boolean;
@@ -100,8 +109,38 @@ export default function EmailGate({
   const [error, setError] = useState<string | null>(null);
   const [aiAnalysis, setAiAnalysis] = useState<AiAnalysisData | null>(null);
   const [aiError, setAiError] = useState(false);
+  const [brand, setBrand] = useState<BrandVisibilityData | null>(null);
+  const [brandLoading, setBrandLoading] = useState(false);
+  const [brandError, setBrandError] = useState(false);
+  const brandRequested = useRef(false);
 
   const groups = useMemo(() => groupChecks(checks), [checks]);
+
+  useEffect(() => {
+    if (!unlocked || brandRequested.current) return;
+    brandRequested.current = true;
+    let active = true;
+    setBrandLoading(true);
+    (async () => {
+      try {
+        const res = await fetch(`/api/scan/${scanId}/brand`, {
+          method: "POST",
+        });
+        const data: BrandResponse = await res.json().catch(() => ({}));
+        if (!active) return;
+        setBrand(data.brandVisibility ?? null);
+        setBrandError(Boolean(data.error) || data.brandVisibility == null);
+      } catch {
+        if (!active) return;
+        setBrandError(true);
+      } finally {
+        if (active) setBrandLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [unlocked, scanId]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -220,6 +259,15 @@ export default function EmailGate({
 
       {/* AI content analysis — between detailed checks and the CTA */}
       {unlocked && <AiAnalysis data={aiAnalysis} error={aiError} />}
+
+      {/* Brand-Visibility — slow live web-search block, after AI analysis */}
+      {unlocked && (
+        <BrandVisibility
+          data={brand}
+          loading={brandLoading}
+          error={brandError}
+        />
+      )}
 
       {/* CTA after unlock */}
       {unlocked && (
