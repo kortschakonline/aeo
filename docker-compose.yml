@@ -1,0 +1,42 @@
+# DEPLOYMENT NOTE: Before running on the VPS, verify the following against your actual Traefik setup
+# and adjust if they differ:
+#   - networks.web.external name: currently "web" (must match the Traefik external network name on the VPS)
+#   - traefik.http.routers.aeo.entrypoints: currently "websecure" (must match the Traefik HTTPS entrypoint name)
+#   - traefik.http.routers.aeo.tls.certresolver: currently "letsencrypt" (must match the Traefik certresolver name)
+
+services:
+  app:
+    build: .
+    environment:
+      - DATABASE_URL=postgres://aeo:${DB_PASS}@db:5432/aeo
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - NOTIFY_EMAIL=${NOTIFY_EMAIL}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+    depends_on: [db]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.aeo.rule=Host(`aeo.kortschak.online`)"
+      - "traefik.http.routers.aeo.entrypoints=websecure"
+      - "traefik.http.routers.aeo.tls.certresolver=letsencrypt"
+      - "traefik.http.services.aeo.loadbalancer.server.port=3000"
+    networks: [web, internal]
+
+  db:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=aeo
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=aeo
+    volumes: [aeo-db:/var/lib/postgresql/data]
+    networks: [internal]
+
+volumes:
+  aeo-db:
+
+networks:
+  web:
+    external: true
+  internal: {}
