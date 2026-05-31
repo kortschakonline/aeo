@@ -4,6 +4,7 @@ import "./globals.css";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { getSession } from "@/src/auth/session";
+import { isAdminEmail } from "@/src/billing/access";
 
 const fraunces = Fraunces({
   variable: "--font-serif",
@@ -36,13 +37,14 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getSession().catch(() => null);
+  const isAdmin = !!session && isAdminEmail(session.email);
   return (
     <html
       lang="de"
       className={`${fraunces.variable} ${interTight.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-bg text-ink">
-        <SiteHeader isLoggedIn={!!session} />
+        <SiteHeader isLoggedIn={!!session} isAdmin={isAdmin} />
         {children}
         <SiteFooter />
       </body>

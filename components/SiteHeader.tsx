@@ -2,9 +2,10 @@ import Link from "next/link";
 
 interface SiteHeaderProps {
   isLoggedIn?: boolean;
+  isAdmin?: boolean;
 }
 
-export default function SiteHeader({ isLoggedIn }: SiteHeaderProps) {
+export default function SiteHeader({ isLoggedIn, isAdmin }: SiteHeaderProps) {
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-bg/70 backdrop-blur-md">
       <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between px-6">
@@ -30,6 +31,14 @@ export default function SiteHeader({ isLoggedIn }: SiteHeaderProps) {
           >
             Preise
           </Link>
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="font-mono text-[11px] uppercase tracking-[0.2em] text-brand transition-colors hover:text-ink"
+            >
+              Admin
+            </Link>
+          )}
           <Link
             href={isLoggedIn ? "/dashboard" : "/login"}
             className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted transition-colors hover:text-ink"
