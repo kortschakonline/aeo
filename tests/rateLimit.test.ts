@@ -3,7 +3,7 @@ import { createRateLimiter } from '@/src/auth/rateLimit'
 
 describe('createRateLimiter', () => {
   it('erlaubt bis zum Limit und blockt danach', () => {
-    let t = 1000
+    const t = 1000
     const limiter = createRateLimiter({ max: 2, windowMs: 1000, now: () => t })
     expect(limiter.allow('a')).toBe(true)
     expect(limiter.allow('a')).toBe(true)
