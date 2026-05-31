@@ -10,6 +10,7 @@ export const scans = pgTable('scans', {
   contentExcerpt: text('content_excerpt'),
   aiAnalysis: jsonb('ai_analysis'),
   brandVisibility: jsonb('brand_visibility'),
+  accountId: integer('account_id').references(() => accounts.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
@@ -19,4 +20,29 @@ export const leads = pgTable('leads', {
   email: text('email').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   notifiedAt: timestamp('notified_at'),
+})
+
+export const accounts = pgTable('accounts', {
+  id: serial('id').primaryKey(),
+  email: text('email').notNull().unique(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  lastLoginAt: timestamp('last_login_at'),
+})
+
+export const loginTokens = pgTable('login_tokens', {
+  id: serial('id').primaryKey(),
+  email: text('email').notNull(),
+  tokenHash: text('token_hash').notNull(),
+  expiresAt: timestamp('expires_at').notNull(),
+  usedAt: timestamp('used_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const sessions = pgTable('sessions', {
+  id: serial('id').primaryKey(),
+  accountId: integer('account_id').references(() => accounts.id).notNull(),
+  tokenHash: text('token_hash').notNull(),
+  expiresAt: timestamp('expires_at').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  lastSeenAt: timestamp('last_seen_at'),
 })
