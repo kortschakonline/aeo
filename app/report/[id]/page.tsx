@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { getScan } from "@/src/db/repo";
 import { getSession } from "@/src/auth/session";
+import { isAdminEmail } from "@/src/billing/access";
 import ReportView from "@/components/ReportView";
 import type { ScanResult } from "@/components/types";
 
@@ -12,7 +13,9 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
   if (!scan) notFound();
 
   const session = await getSession();
-  const owned = !!session && scan.accountId != null && scan.accountId === session.accountId;
+  const owned =
+    !!session &&
+    ((scan.accountId != null && scan.accountId === session.accountId) || isAdminEmail(session.email));
   if (!owned) redirect("/login");
 
   const result: ScanResult = {
