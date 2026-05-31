@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getSession } from '@/src/auth/session'
-import { getMonitorsForAccount, latestScanUrlForDomain, upsertMonitor } from '@/src/db/repo'
+import { getMonitorsForAccount, latestScanUrlForDomain, upsertMonitor, getAccountPlan } from '@/src/db/repo'
 import { canEnable } from '@/src/monitoring/logic'
-import { MAX_MONITORS } from '@/src/monitoring/constants'
+import { monitorLimit } from '@/src/billing/plans'
 
 export const runtime = 'nodejs'
 
@@ -21,14 +21,14 @@ export async function POST(req: NextRequest) {
   const existing = list.find((m) => m.domain === domain)
 
   if (active) {
+    const limit = monitorLimit(await getAccountPlan(session.accountId))
     const alreadyActive = !!existing?.active
     const activeCount = list.filter((m) => m.active).length
-    if (!canEnable(activeCount, MAX_MONITORS, alreadyActive)) {
-      return NextResponse.json({ error: `Limit erreicht (max. ${MAX_MONITORS})` }, { status: 409 })
+    if (!canEnable(activeCount, limit, alreadyActive)) {
+      return NextResponse.json({ error: 'Abo erforderlich', upgrade: true }, { status: 409 })
     }
   }
 
-  // URL: bestehenden Monitor wiederverwenden; sonst (Erstaktivierung) die neueste Scan-URL.
   const url = existing?.url ?? (await latestScanUrlForDomain(session.accountId, domain))
   if (!url) return NextResponse.json({ error: 'Keine Scan-URL für diese Domain' }, { status: 400 })
 
