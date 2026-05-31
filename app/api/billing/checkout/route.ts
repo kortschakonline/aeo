@@ -26,17 +26,22 @@ export async function POST(req: NextRequest) {
 
   try {
     const existing = await getSubscription(session.accountId)
-    const customerId =
-      existing?.stripeCustomerId ?? (await stripe.customers.create({ email: session.email })).id
-
-    // Zeile sofort persistieren (schließt Webhook-Reihenfolge-Lücke).
-    await upsertSubscription(session.accountId, {
-      stripeCustomerId: customerId,
-      stripeSubscriptionId: existing?.stripeSubscriptionId ?? null,
-      plan,
-      status: existing?.status ?? 'incomplete',
-      currentPeriodEnd: existing?.currentPeriodEnd ?? null,
-    })
+    let customerId: string
+    if (existing) {
+      // Customer-ID ist bereits persistiert; Plan/Status NICHT anfassen
+      // (sonst würde ein Tier-Wechsel vor der Zahlung freischalten — Webhook ist die Wahrheit).
+      customerId = existing.stripeCustomerId
+    } else {
+      customerId = (await stripe.customers.create({ email: session.email })).id
+      // Neue Zeile sofort persistieren (schließt Webhook-Reihenfolge-Lücke); 'incomplete' gewährt nichts.
+      await upsertSubscription(session.accountId, {
+        stripeCustomerId: customerId,
+        stripeSubscriptionId: null,
+        plan,
+        status: 'incomplete',
+        currentPeriodEnd: null,
+      })
+    }
 
     const base = baseUrl(req)
     const checkout = await stripe.checkout.sessions.create({
