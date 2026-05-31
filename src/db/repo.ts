@@ -2,7 +2,6 @@ import { db } from '@/src/db/client'
 import { scans, leads, accounts, loginTokens, sessions } from '@/src/db/schema'
 import { eq, desc, sql } from 'drizzle-orm'
 import { ensureSchema } from '@/src/db/migrate'
-import { isExpired } from '@/src/auth/tokens'
 import type { ScanResult } from '@/src/engine/types'
 import type { AiAnalysis } from '@/src/ai/types'
 import type { BrandVisibility } from '@/src/ai/types'
@@ -61,13 +60,17 @@ export async function createLoginToken(email: string, tokenHash: string, expires
   await db.insert(loginTokens).values({ email: email.toLowerCase(), tokenHash, expiresAt })
 }
 
-/** Prüft & verbraucht einen Login-Token. Liefert die E-Mail oder null. */
+/** Prüft & verbraucht einen Login-Token atomar. Liefert die E-Mail oder null. */
 export async function consumeLoginToken(tokenHash: string): Promise<string | null> {
   await ensureSchema()
-  const [row] = await db.select().from(loginTokens).where(eq(loginTokens.tokenHash, tokenHash))
-  if (!row || row.usedAt || isExpired(row.expiresAt)) return null
-  await db.update(loginTokens).set({ usedAt: new Date() }).where(eq(loginTokens.id, row.id))
-  return row.email
+  const now = new Date()
+  const rows = await db.execute(sql`
+    UPDATE login_tokens SET used_at = ${now}
+    WHERE token_hash = ${tokenHash} AND used_at IS NULL AND expires_at > ${now}
+    RETURNING email
+  `)
+  const row = (rows as unknown as Array<{ email: string }>)[0]
+  return row?.email ?? null
 }
 
 /** Ordnet einmalig alle Alt-Scans dieser E-Mail (via leads) dem Account zu. */
