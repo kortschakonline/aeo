@@ -5,6 +5,14 @@ export const metadata: Metadata = {
   title: "Datenschutz – Kortschak AEO",
 };
 
+function H2({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-faint">
+      {children}
+    </h2>
+  );
+}
+
 export default function DatenschutzPage() {
   return (
     <main className="flex-1">
@@ -16,18 +24,20 @@ export default function DatenschutzPage() {
           Datenschutzerklärung
         </h1>
 
-        <div className="mt-10 space-y-6 text-sm leading-relaxed text-muted">
+        <div className="mt-10 space-y-7 text-sm leading-relaxed text-muted">
           <p>
             Der Schutz deiner Daten ist uns wichtig. Wir verarbeiten
             personenbezogene Daten ausschließlich im Rahmen der gesetzlichen
-            Bestimmungen (DSGVO, österr. DSG).
+            Bestimmungen (DSGVO, österreichisches DSG). Diese Erklärung gilt für
+            das AEO-Tool unter aeo.kortschak.online.
           </p>
 
           <section>
-            <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-faint">
-              Verantwortlicher
-            </h2>
+            <H2>Verantwortlicher</H2>
             <p className="mt-2 text-ink">{SITE.legalName}</p>
+            <p>
+              {SITE.street}, {SITE.zipCity}, Österreich
+            </p>
             <p>
               E-Mail:{" "}
               <a href={`mailto:${SITE.email}`} className="text-ink hover:underline">
@@ -37,58 +47,76 @@ export default function DatenschutzPage() {
           </section>
 
           <section>
-            <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-faint">
-              AEO-Scan
-            </h2>
+            <H2>Server-Logs</H2>
             <p className="mt-2">
-              Wenn du eine Domain prüfst, rufen wir die öffentlich erreichbare
-              Webseite dieser Domain ab und werten technische sowie
-              inhaltliche Merkmale aus. Die eingegebene Domain und das
-              Scan-Ergebnis werden zur Bereitstellung des Reports gespeichert.
+              Beim Aufruf der Seite werden technisch notwendige Daten
+              (IP-Adresse, Browser, Betriebssystem, Zeitpunkt des Zugriffs)
+              automatisch verarbeitet und nur kurzzeitig zur Sicherstellung des
+              Betriebs und der Sicherheit gespeichert (Art. 6 Abs. 1 lit. f
+              DSGVO).
             </p>
           </section>
 
           <section>
-            <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-faint">
-              E-Mail / Voll-Report
-            </h2>
+            <H2>AEO-Scan</H2>
+            <p className="mt-2">
+              Wenn du eine Domain prüfst, rufen wir die öffentlich erreichbare
+              Webseite dieser Domain ab und werten technische sowie inhaltliche
+              Merkmale aus. Die eingegebene Domain und das Scan-Ergebnis werden
+              zur Bereitstellung des Reports gespeichert.
+            </p>
+          </section>
+
+          <section>
+            <H2>E-Mail / Voll-Report</H2>
             <p className="mt-2">
               Gibst du deine E-Mail-Adresse ein, um den vollständigen Report
               freizuschalten, speichern wir diese, um dir die Auswertung
               bereitzustellen und dich bei Interesse zur AEO-Optimierung zu
-              kontaktieren (Rechtsgrundlage: berechtigtes Interesse bzw.
-              Einwilligung, Art. 6 Abs. 1 lit. a/f DSGVO). Du kannst der
-              Nutzung jederzeit unter {SITE.email} widersprechen.
+              kontaktieren (Art. 6 Abs. 1 lit. a und f DSGVO). Du kannst dem
+              jederzeit unter {SITE.email} bzw. {SITE.inquiryEmail}{" "}
+              widersprechen.
             </p>
           </section>
 
           <section>
-            <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-faint">
-              Auftragsverarbeiter
-            </h2>
+            <H2>Auftragsverarbeiter</H2>
             <p className="mt-2">
-              Für Hosting und KI-gestützte Analyse setzen wir Dienstleister ein
-              (u. a. Hosting-Provider sowie Anthropic für die KI-Analyse). Mit
-              diesen bestehen entsprechende Vereinbarungen zur
-              Auftragsverarbeitung.
+              Für Hosting, Versand und KI-gestützte Analyse setzen wir
+              Dienstleister ein – insbesondere unseren Hosting-Provider sowie
+              Anthropic (Claude) für die KI-Analyse. Mit diesen bestehen
+              Vereinbarungen zur Auftragsverarbeitung gemäß Art. 28 DSGVO.
             </p>
           </section>
 
           <section>
-            <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-faint">
-              Deine Rechte
-            </h2>
+            <H2>Schriftarten</H2>
+            <p className="mt-2">
+              Schriftarten werden lokal von unserem Server ausgeliefert
+              (self-hosted). Es werden dabei keine Daten an Dritte übertragen.
+              Dieses Tool nutzt kein Google&nbsp;Analytics, keine Werbe-Pixel
+              und keine Tracking-Cookies.
+            </p>
+          </section>
+
+          <section>
+            <H2>Deine Rechte</H2>
             <p className="mt-2">
               Du hast das Recht auf Auskunft, Berichtigung, Löschung,
-              Einschränkung, Datenübertragbarkeit und Widerspruch sowie das
-              Recht auf Beschwerde bei der Datenschutzbehörde.
+              Einschränkung der Verarbeitung, Datenübertragbarkeit und
+              Widerspruch (Art. 15–22 DSGVO). Außerdem hast du das Recht auf
+              Beschwerde bei der österreichischen Datenschutzbehörde (
+              <a
+                href="https://www.dsb.gv.at"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-ink hover:underline"
+              >
+                dsb.gv.at
+              </a>
+              ).
             </p>
           </section>
-
-          <p className="border-t border-line pt-6 text-xs text-faint">
-            Hinweis: Dies ist ein Entwurf und ersetzt keine Rechtsberatung. Die
-            Erklärung wird vor dem Marketing-Einsatz finalisiert.
-          </p>
         </div>
       </div>
     </main>
