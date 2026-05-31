@@ -20,19 +20,19 @@ export default function Hero({ onScan, loading, compact }: HeroProps) {
 
   if (compact) {
     return (
-      <header className="mx-auto w-full max-w-3xl px-6 pt-16 text-center sm:pt-24">
+      <section className="mx-auto w-full max-w-3xl px-6 pt-16 text-center sm:pt-24">
         <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-brand">
           AEO Score Check
         </p>
         <h1 className="mt-4 font-serif text-4xl font-medium leading-[1.05] tracking-tight text-ink sm:text-5xl">
           Findet die KI deine Website?
         </h1>
-      </header>
+      </section>
     );
   }
 
   return (
-    <header className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden px-6">
+    <section className="relative flex min-h-[calc(100svh-3.5rem)] flex-col items-center justify-center overflow-hidden px-6 py-20">
       {/* Atmospheric radial glow */}
       <div
         aria-hidden
@@ -115,11 +115,6 @@ export default function Hero({ onScan, loading, compact }: HeroProps) {
           Kostenlos · ~15 Sekunden · keine Anmeldung
         </p>
       </div>
-
-      {/* Wordmark */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 font-mono text-xs lowercase tracking-[0.3em] text-faint">
-        kortschak
-      </div>
-    </header>
+    </section>
   );
 }

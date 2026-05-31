@@ -6,6 +6,7 @@ import ScanProgress from "@/components/ScanProgress";
 import ScoreRing from "@/components/ScoreRing";
 import CategoryCard from "@/components/CategoryCard";
 import EmailGate from "@/components/EmailGate";
+import AboutServices from "@/components/AboutServices";
 import {
   CATEGORY_LABELS,
   type Category,
@@ -69,6 +70,7 @@ export default function Home() {
     return (
       <main className="flex flex-1 flex-col">
         <Hero onScan={handleScan} loading={false} />
+        <AboutServices />
       </main>
     );
   }

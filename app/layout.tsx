@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter_Tight, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 
 const fraunces = Fraunces({
   variable: "--font-serif",
@@ -38,7 +40,9 @@ export default function RootLayout({
       className={`${fraunces.variable} ${interTight.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-bg text-ink">
+        <SiteHeader />
         {children}
+        <SiteFooter />
       </body>
     </html>
   );
