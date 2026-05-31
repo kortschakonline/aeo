@@ -94,6 +94,7 @@ export async function deleteAccount(accountId: number, email: string): Promise<v
   const normalized = email.toLowerCase()
   await db.update(scans).set({ accountId: null }).where(eq(scans.accountId, accountId))
   await db.delete(sessions).where(eq(sessions.accountId, accountId))
+  await db.delete(monitors).where(eq(monitors.accountId, accountId))
   await db.execute(sql`DELETE FROM login_tokens WHERE lower(email) = ${normalized}`)
   await db.execute(sql`DELETE FROM leads WHERE lower(email) = ${normalized}`)
   await db.delete(accounts).where(eq(accounts.id, accountId))

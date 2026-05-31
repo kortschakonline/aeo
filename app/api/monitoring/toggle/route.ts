@@ -17,16 +17,19 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: 'Ungültige Eingabe' }, { status: 400 })
   const { domain, active } = parsed.data
 
+  const list = await getMonitorsForAccount(session.accountId)
+  const existing = list.find((m) => m.domain === domain)
+
   if (active) {
-    const list = await getMonitorsForAccount(session.accountId)
-    const alreadyActive = list.some((m) => m.domain === domain && m.active)
+    const alreadyActive = !!existing?.active
     const activeCount = list.filter((m) => m.active).length
     if (!canEnable(activeCount, MAX_MONITORS, alreadyActive)) {
       return NextResponse.json({ error: `Limit erreicht (max. ${MAX_MONITORS})` }, { status: 409 })
     }
   }
 
-  const url = await latestScanUrlForDomain(session.accountId, domain)
+  // URL: bestehenden Monitor wiederverwenden; sonst (Erstaktivierung) die neueste Scan-URL.
+  const url = existing?.url ?? (await latestScanUrlForDomain(session.accountId, domain))
   if (!url) return NextResponse.json({ error: 'Keine Scan-URL für diese Domain' }, { status: 400 })
 
   await upsertMonitor(session.accountId, domain, url, active)
