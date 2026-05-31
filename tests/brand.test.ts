@@ -16,10 +16,12 @@ describe('detectBrand', () => {
 function fakeClient() {
   return {
     messages: {
-      create: vi.fn(async (params: any) => {
-        const toolType = params.tools?.[0]?.type
+      create: vi.fn(async (params: Record<string, unknown>) => {
+        const tools = params.tools as Array<{ type?: string }> | undefined
+        const toolType = tools?.[0]?.type
         if (toolType === 'web_search_20250305') {
-          const q: string = params.messages[0].content
+          const messages = params.messages as Array<{ content: string }>
+          const q: string = messages[0].content
           if (q.includes('Trofaiach')) {
             return { content: [
               { type: 'text', text: 'Ein Anbieter ist Kortschak.', citations: [] },
@@ -56,8 +58,9 @@ describe('runBrandVisibility', () => {
   it('schließt eigene Marken-Domains aus den Mitbewerbern aus', async () => {
     const client = {
       messages: {
-        create: vi.fn(async (params: any) => {
-          if (params.tools?.[0]?.type === 'web_search_20250305') {
+        create: vi.fn(async (params: Record<string, unknown>) => {
+          const tools = params.tools as Array<{ type?: string }> | undefined
+          if (tools?.[0]?.type === 'web_search_20250305') {
             return { content: [
               { type: 'text', text: 'Anbieter.', citations: [] },
               { type: 'web_search_tool_result', content: [
@@ -78,8 +81,9 @@ describe('runBrandVisibility', () => {
   it('fängt Fehler einer einzelnen Websuche ab (zählt als nicht erschienen)', async () => {
     const client = {
       messages: {
-        create: vi.fn(async (params: any) => {
-          if (params.tools?.[0]?.type === 'web_search_20250305') throw new Error('boom')
+        create: vi.fn(async (params: Record<string, unknown>) => {
+          const tools = params.tools as Array<{ type?: string }> | undefined
+          if (tools?.[0]?.type === 'web_search_20250305') throw new Error('boom')
           return { content: [{ type: 'tool_use', name: 'questions', input: { brandName: 'X', questions: ['F1?'] } }] }
         }),
       },

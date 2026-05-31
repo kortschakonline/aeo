@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { scoreScan } from '@/src/engine/scoring'
-import type { CheckResult } from '@/src/engine/types'
+import type { CheckResult, Category } from '@/src/engine/types'
 
-const mk = (category: any, score: number, key: string): CheckResult =>
+const mk = (category: Category, score: number, key: string): CheckResult =>
   ({ key, category, score, label: key, detail: '' })
 
 describe('scoreScan', () => {

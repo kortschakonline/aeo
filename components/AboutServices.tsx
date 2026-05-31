@@ -39,8 +39,8 @@ export default function AboutServices() {
             Was wir machen
           </p>
           <h2 className="mt-4 font-serif text-3xl font-medium leading-[1.1] tracking-tight text-ink sm:text-4xl">
-            Von <span className="italic text-faint">„unsichtbar"</span> zu{" "}
-            <span className="italic text-brand">„wird zitiert".</span>
+            Von <span className="italic text-faint">„unsichtbar&quot;</span> zu{" "}
+            <span className="italic text-brand">„wird zitiert&quot;.</span>
           </h2>
           <p className="mt-5 text-lg leading-relaxed text-muted">
             Immer mehr Menschen fragen nicht mehr Google, sondern ChatGPT,

@@ -22,12 +22,16 @@ const STEP_MS = 900;
 export default function ScanProgress({ running }: ScanProgressProps) {
   const [done, setDone] = useState(0);
 
-  useEffect(() => {
-    if (!running) {
-      setDone(0);
-      return;
-    }
+  // Reset beim Wechsel von `running` während des Renders ableiten, statt
+  // setState direkt im Effekt aufzurufen (react-hooks/set-state-in-effect).
+  const [prevRunning, setPrevRunning] = useState(running);
+  if (running !== prevRunning) {
+    setPrevRunning(running);
     setDone(0);
+  }
+
+  useEffect(() => {
+    if (!running) return;
     const timers: ReturnType<typeof setTimeout>[] = [];
     for (let i = 1; i <= STEPS.length; i++) {
       timers.push(
