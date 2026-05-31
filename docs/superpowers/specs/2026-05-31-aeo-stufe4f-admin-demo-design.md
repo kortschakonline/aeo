@@ -52,11 +52,7 @@ export function isCompEmail(email: string, env: AccessEnv = process.env): boolea
 
 **Plan-Auflösung** in `src/billing/plans.ts` ergänzen (rein):
 ```ts
-export function resolvePlan(
-  email: string,
-  sub: { plan: Plan; status: string } | null,
-  isComp: boolean,
-): Plan {
+export function resolvePlan(sub: { plan: Plan; status: string } | null, isComp: boolean): Plan {
   if (isComp) return 'gross'
   return effectivePlan(sub)
 }
