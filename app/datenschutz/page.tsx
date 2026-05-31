@@ -126,6 +126,18 @@ export default function DatenschutzPage() {
           </section>
 
           <section>
+            <H2>Monitoring</H2>
+            <p className="mt-2">
+              Aktivierst du für eine Domain das Monitoring, scannen wir diese
+              Domain regelmäßig (wöchentlich) automatisch erneut und speichern
+              das Ergebnis in deinem Konto. Ändert sich der Gesamt-Score
+              gegenüber dem letzten Lauf, senden wir eine E-Mail an deine
+              Konto-Adresse. Du kannst das Monitoring pro Domain jederzeit im
+              Dashboard wieder deaktivieren.
+            </p>
+          </section>
+
+          <section>
             <H2>Deine Rechte</H2>
             <p className="mt-2">
               Du hast das Recht auf Auskunft, Berichtigung, Löschung,
