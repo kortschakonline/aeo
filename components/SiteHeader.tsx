@@ -25,6 +25,12 @@ export default function SiteHeader({ isLoggedIn }: SiteHeaderProps) {
             AEO Score Check
           </span>
           <Link
+            href="/pricing"
+            className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted transition-colors hover:text-ink"
+          >
+            Preise
+          </Link>
+          <Link
             href={isLoggedIn ? "/dashboard" : "/login"}
             className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted transition-colors hover:text-ink"
           >
