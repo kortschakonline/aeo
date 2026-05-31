@@ -58,6 +58,12 @@ export default function Hero({ onScan, loading, compact }: HeroProps) {
       />
 
       <div className="relative z-10 flex w-full max-w-4xl flex-col items-center text-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/Logo_Kortschak_mono_weiss.svg"
+          alt="Kortschak"
+          className="animate-fade-up mb-10 h-8 w-auto sm:h-9"
+        />
         <div className="animate-fade-up flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.3em] text-brand">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-brand" />
           Answer Engine Optimization
