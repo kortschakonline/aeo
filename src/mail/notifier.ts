@@ -32,3 +32,20 @@ export async function sendMagicLink(email: string, link: string): Promise<void> 
     text: `Hallo,\n\nhier ist dein Login-Link für das AEO-Tool:\n${link}\n\nDer Link ist 15 Minuten gültig und kann nur einmal verwendet werden. Falls du keinen Login angefordert hast, ignoriere diese E-Mail.\n\n— AEO-Tool, Kortschak`,
   })
 }
+
+export async function sendMonitoringAlert(
+  email: string,
+  domain: string,
+  oldScore: number,
+  newScore: number,
+): Promise<void> {
+  const transport = createTransport()
+  if (!transport) { console.warn('SMTP nicht konfiguriert, überspringe Monitoring-Alert'); return }
+  const arrow = newScore > oldScore ? '↑' : '↓'
+  await transport.sendMail({
+    from: process.env.SMTP_USER,
+    to: email,
+    subject: `AEO-Score für ${domain}: ${oldScore} → ${newScore}`,
+    text: `Hallo,\n\nder AEO-Score deiner überwachten Domain ${domain} hat sich geändert:\n\n${oldScore} → ${newScore} (${arrow})\n\nDetails im Dashboard: https://aeo.kortschak.online/dashboard\n\n— AEO-Tool, Kortschak`,
+  })
+}
