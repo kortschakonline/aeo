@@ -54,15 +54,16 @@ export async function POST(req: NextRequest) {
       if (accountId && subId && customerId) {
         const sub = await stripe.subscriptions.retrieve(subId)
         const plan = planFromSubscription(sub)
-        if (plan) {
-          await upsertSubscription(accountId, {
-            stripeCustomerId: customerId,
-            stripeSubscriptionId: sub.id,
-            plan,
-            status: sub.status,
-            currentPeriodEnd: periodEnd(sub),
-          })
+        if (!plan) {
+          throw new Error(`checkout.session.completed: kein Plan für Price (sub ${sub.id})`)
         }
+        await upsertSubscription(accountId, {
+          stripeCustomerId: customerId,
+          stripeSubscriptionId: sub.id,
+          plan,
+          status: sub.status,
+          currentPeriodEnd: periodEnd(sub),
+        })
       }
     } else if (event.type === 'customer.subscription.updated' || event.type === 'customer.subscription.deleted') {
       const sub = event.data.object as Stripe.Subscription
