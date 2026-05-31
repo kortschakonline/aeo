@@ -100,6 +100,32 @@ export default function DatenschutzPage() {
           </section>
 
           <section>
+            <H2>Nutzerkonten &amp; Login</H2>
+            <p className="mt-2">
+              Wer ein Konto anlegt, wird per Magic-Link angemeldet: Wir senden
+              einen einmaligen Login-Link an die angegebene E-Mail-Adresse. Wir
+              speichern dazu die E-Mail-Adresse, Zeitpunkte von Erstellung und
+              letztem Login sowie kurzlebige Login-Tokens (15&nbsp;Minuten
+              gültig). Für die Anmeldung setzen wir ein technisch notwendiges
+              Session-Cookie (<code>aeo_session</code>, HttpOnly, 30&nbsp;Tage)
+              — dieses dient ausschließlich dem eingeloggten Zustand und
+              erfordert keine Einwilligung. Einem Konto werden die mit derselben
+              E-Mail durchgeführten Scans zugeordnet, damit der Verlauf sichtbar
+              ist.
+            </p>
+          </section>
+
+          <section>
+            <H2>Löschung</H2>
+            <p className="mt-2">
+              Du kannst dein Konto jederzeit im Dashboard löschen. Dabei werden
+              E-Mail-Adresse, Sitzungen, Login-Tokens und die zugehörigen
+              Lead-Einträge entfernt; verbleibende Scan-Daten (Domain und Score)
+              werden anonymisiert und sind danach keiner Person mehr zuordenbar.
+            </p>
+          </section>
+
+          <section>
             <H2>Deine Rechte</H2>
             <p className="mt-2">
               Du hast das Recht auf Auskunft, Berichtigung, Löschung,
