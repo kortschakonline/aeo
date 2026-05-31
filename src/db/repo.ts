@@ -1,6 +1,6 @@
 import { db } from '@/src/db/client'
 import { scans, leads, accounts, loginTokens, sessions, monitors, subscriptions } from '@/src/db/schema'
-import { eq, and, desc, sql, inArray } from 'drizzle-orm'
+import { eq, and, desc, sql, inArray, isNull, gt } from 'drizzle-orm'
 import { ensureSchema } from '@/src/db/migrate'
 import { resolvePlan, type Plan } from '@/src/billing/plans'
 import { isCompEmail } from '@/src/billing/access'
@@ -65,13 +65,19 @@ export async function createLoginToken(email: string, tokenHash: string, expires
 /** Prüft & verbraucht einen Login-Token atomar. Liefert die E-Mail oder null. */
 export async function consumeLoginToken(tokenHash: string): Promise<string | null> {
   await ensureSchema()
-  const now = new Date()
-  const rows = await db.execute(sql`
-    UPDATE login_tokens SET used_at = ${now}
-    WHERE token_hash = ${tokenHash} AND used_at IS NULL AND expires_at > ${now}
-    RETURNING email
-  `)
-  const row = (rows as unknown as Array<{ email: string }>)[0]
+  // Atomar über den Query-Builder (db.execute(sql``) serialisiert Date-Parameter
+  // mit postgres-js NICHT korrekt → ERR_INVALID_ARG_TYPE). Bleibt single-statement.
+  const [row] = await db
+    .update(loginTokens)
+    .set({ usedAt: new Date() })
+    .where(
+      and(
+        eq(loginTokens.tokenHash, tokenHash),
+        isNull(loginTokens.usedAt),
+        gt(loginTokens.expiresAt, new Date()),
+      ),
+    )
+    .returning({ email: loginTokens.email })
   return row?.email ?? null
 }
 
