@@ -1,7 +1,8 @@
 import { db } from '@/src/db/client'
-import { scans, leads, accounts, loginTokens, sessions, monitors } from '@/src/db/schema'
-import { eq, and, desc, sql } from 'drizzle-orm'
+import { scans, leads, accounts, loginTokens, sessions, monitors, subscriptions } from '@/src/db/schema'
+import { eq, and, desc, sql, inArray } from 'drizzle-orm'
 import { ensureSchema } from '@/src/db/migrate'
+import { effectivePlan, type Plan } from '@/src/billing/plans'
 import type { ScanResult } from '@/src/engine/types'
 import type { AiAnalysis } from '@/src/ai/types'
 import type { BrandVisibility } from '@/src/ai/types'
@@ -97,6 +98,7 @@ export async function deleteAccount(accountId: number, email: string): Promise<v
   await db.delete(monitors).where(eq(monitors.accountId, accountId))
   await db.execute(sql`DELETE FROM login_tokens WHERE lower(email) = ${normalized}`)
   await db.execute(sql`DELETE FROM leads WHERE lower(email) = ${normalized}`)
+  await db.delete(subscriptions).where(eq(subscriptions.accountId, accountId))
   await db.delete(accounts).where(eq(accounts.id, accountId))
 }
 
@@ -156,4 +158,56 @@ export async function getActiveMonitorsWithEmail() {
 export async function recordMonitorRun(monitorId: number, score: number): Promise<void> {
   await ensureSchema()
   await db.update(monitors).set({ lastRunAt: new Date(), lastScore: score }).where(eq(monitors.id, monitorId))
+}
+
+// ---- Billing (Stufe 4c) ----
+
+export async function getSubscription(accountId: number) {
+  await ensureSchema()
+  const [row] = await db.select().from(subscriptions).where(eq(subscriptions.accountId, accountId))
+  return row ?? null
+}
+
+export async function getSubscriptionByCustomerId(stripeCustomerId: string) {
+  await ensureSchema()
+  const [row] = await db.select().from(subscriptions).where(eq(subscriptions.stripeCustomerId, stripeCustomerId))
+  return row ?? null
+}
+
+export async function upsertSubscription(
+  accountId: number,
+  data: {
+    stripeCustomerId: string
+    stripeSubscriptionId: string | null
+    plan: string
+    status: string
+    currentPeriodEnd: Date | null
+  },
+): Promise<void> {
+  await ensureSchema()
+  await db
+    .insert(subscriptions)
+    .values({ accountId, ...data })
+    .onConflictDoUpdate({
+      target: subscriptions.accountId,
+      set: {
+        stripeCustomerId: data.stripeCustomerId,
+        stripeSubscriptionId: data.stripeSubscriptionId,
+        plan: data.plan,
+        status: data.status,
+        currentPeriodEnd: data.currentPeriodEnd,
+        updatedAt: new Date(),
+      },
+    })
+}
+
+export async function getAccountPlan(accountId: number): Promise<Plan> {
+  const sub = await getSubscription(accountId)
+  return effectivePlan(sub ? { plan: sub.plan as Plan, status: sub.status } : null)
+}
+
+export async function deactivateMonitors(ids: number[]): Promise<void> {
+  if (ids.length === 0) return
+  await ensureSchema()
+  await db.update(monitors).set({ active: false }).where(inArray(monitors.id, ids))
 }
