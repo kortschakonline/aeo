@@ -4,6 +4,8 @@ type SiteConfig = {
   legalName: string;
   tagline: string;
   services: string[];
+  /** Interne Adresse für Anfragen/CTA & Lead-Benachrichtigungen (nicht das Office). */
+  inquiryEmail: string;
   street: string;
   zipCity: string;
   phone: string;
@@ -19,6 +21,7 @@ export const SITE: SiteConfig = {
   tagline:
     "Werbetechnik, Fahrzeugbeschriftung & Web aus Trofaiach. Wir machen deine Marke sichtbar — auch für KI.",
   services: ["Werbetechnik", "Fahrzeugbeschriftungen", "Web & Online-Tools"],
+  inquiryEmail: "mail@kortschak.online",
   street: "Bahnstraße 6",
   zipCity: "8793 Trofaiach",
   phone: "+43 3847 67666",

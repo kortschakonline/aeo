@@ -20,8 +20,20 @@ const STEPS = [
 
 export default function AboutServices() {
   return (
-    <section className="border-t border-line bg-bg-soft">
-      <div className="mx-auto w-full max-w-5xl px-6 py-20 sm:py-28">
+    <section className="relative overflow-hidden border-t border-line bg-bg">
+      {/* Soft background glow */}
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div
+          className="absolute left-1/3 top-[-4rem] h-80 w-80 -translate-x-1/2 rounded-full blur-[110px]"
+          style={{ background: "rgba(255,28,32,0.18)" }}
+        />
+        <div
+          className="absolute bottom-[-5rem] right-1/4 h-80 w-80 translate-x-1/2 rounded-full blur-[120px]"
+          style={{ background: "rgba(241,135,0,0.14)" }}
+        />
+      </div>
+
+      <div className="relative z-10 mx-auto w-full max-w-5xl px-6 py-20 sm:py-28">
         <div className="max-w-2xl">
           <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-brand">
             Was wir machen
@@ -33,18 +45,30 @@ export default function AboutServices() {
           <p className="mt-5 text-lg leading-relaxed text-muted">
             Immer mehr Menschen fragen nicht mehr Google, sondern ChatGPT,
             Perplexity &amp; Co. Wer dort nicht auftaucht, existiert für diese
-            Nutzer nicht. Wir machen deine Marke KI-sichtbar — messbar.
+            Nutzer nicht. Wir machen deine Marke KI-sichtbar — Schritt für
+            Schritt und messbar.
           </p>
         </div>
 
-        <div className="mt-14 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-3">
+        {/* Floating glass cards */}
+        <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-3">
           {STEPS.map((s) => (
-            <div key={s.no} className="flex flex-col gap-4 bg-surface p-7">
-              <span className="font-mono text-sm text-brand">{s.no}</span>
-              <h3 className="font-serif text-xl font-medium text-ink">
-                {s.title}
-              </h3>
-              <p className="text-sm leading-relaxed text-muted">{s.body}</p>
+            <div
+              key={s.no}
+              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] p-7 shadow-[0_12px_40px_-18px_rgba(0,0,0,0.8)] backdrop-blur-xl transition-transform duration-300 hover:-translate-y-1.5"
+            >
+              {/* glass sheen */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-b from-white/[0.07] to-transparent"
+              />
+              <div className="relative flex flex-col gap-4">
+                <span className="font-mono text-sm text-brand">{s.no}</span>
+                <h3 className="font-serif text-xl font-medium text-ink">
+                  {s.title}
+                </h3>
+                <p className="text-sm leading-relaxed text-muted">{s.body}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -58,7 +82,7 @@ export default function AboutServices() {
             {SITE.services.map((s) => (
               <li
                 key={s}
-                className="rounded-full border border-line-2 px-4 py-1.5 font-mono text-xs text-muted"
+                className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 font-mono text-xs text-muted backdrop-blur-sm"
               >
                 {s}
               </li>
