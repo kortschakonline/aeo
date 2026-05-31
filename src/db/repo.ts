@@ -1,6 +1,6 @@
 import { db } from '@/src/db/client'
-import { scans, leads, accounts, loginTokens, sessions } from '@/src/db/schema'
-import { eq, desc, sql } from 'drizzle-orm'
+import { scans, leads, accounts, loginTokens, sessions, monitors } from '@/src/db/schema'
+import { eq, and, desc, sql } from 'drizzle-orm'
 import { ensureSchema } from '@/src/db/migrate'
 import type { ScanResult } from '@/src/engine/types'
 import type { AiAnalysis } from '@/src/ai/types'
@@ -97,4 +97,62 @@ export async function deleteAccount(accountId: number, email: string): Promise<v
   await db.execute(sql`DELETE FROM login_tokens WHERE lower(email) = ${normalized}`)
   await db.execute(sql`DELETE FROM leads WHERE lower(email) = ${normalized}`)
   await db.delete(accounts).where(eq(accounts.id, accountId))
+}
+
+// ---- Monitoring (Stufe 4b) ----
+
+export async function getMonitorsForAccount(accountId: number) {
+  await ensureSchema()
+  return db.select().from(monitors).where(eq(monitors.accountId, accountId))
+}
+
+export async function upsertMonitor(
+  accountId: number,
+  domain: string,
+  url: string,
+  active: boolean,
+): Promise<void> {
+  await ensureSchema()
+  await db
+    .insert(monitors)
+    .values({ accountId, domain, url, active })
+    .onConflictDoUpdate({
+      target: [monitors.accountId, monitors.domain],
+      set: { active, url },
+    })
+}
+
+export async function latestScanUrlForDomain(accountId: number, domain: string): Promise<string | null> {
+  await ensureSchema()
+  const [row] = await db
+    .select({ url: scans.url })
+    .from(scans)
+    .where(and(eq(scans.accountId, accountId), eq(scans.domain, domain)))
+    .orderBy(desc(scans.createdAt))
+    .limit(1)
+  return row?.url ?? null
+}
+
+/** Alle aktiven Monitore mit Account-E-Mail (Join), älteste/nie-gelaufene zuerst. */
+export async function getActiveMonitorsWithEmail() {
+  await ensureSchema()
+  return db
+    .select({
+      id: monitors.id,
+      accountId: monitors.accountId,
+      domain: monitors.domain,
+      url: monitors.url,
+      lastRunAt: monitors.lastRunAt,
+      lastScore: monitors.lastScore,
+      email: accounts.email,
+    })
+    .from(monitors)
+    .innerJoin(accounts, eq(monitors.accountId, accounts.id))
+    .where(eq(monitors.active, true))
+    .orderBy(sql`${monitors.lastRunAt} ASC NULLS FIRST`)
+}
+
+export async function recordMonitorRun(monitorId: number, score: number): Promise<void> {
+  await ensureSchema()
+  await db.update(monitors).set({ lastRunAt: new Date(), lastScore: score }).where(eq(monitors.id, monitorId))
 }
