@@ -248,8 +248,20 @@ export default function EmailGate({
                 >
                   {loading ? "Wird freigeschaltet…" : "Voll-Report freischalten"}
                 </button>
-                <p className="text-center font-mono text-[11px] text-faint">
+                <p className="text-center font-mono text-[11px] leading-relaxed text-faint">
                   Kein Spam · jederzeit abbestellbar
+                  <br />
+                  Mit dem Absenden stimmst du der Verarbeitung deiner E-Mail
+                  gemäß{" "}
+                  <a
+                    href="/datenschutz"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline underline-offset-2 transition-colors hover:text-ink"
+                  >
+                    Datenschutz
+                  </a>{" "}
+                  zu.
                 </p>
               </form>
             </div>
