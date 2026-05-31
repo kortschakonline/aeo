@@ -27,7 +27,7 @@ export default function MonitorToggle({
       });
       if (res.status === 409) {
         const d = await res.json();
-        setMsg(d.error ?? "Limit erreicht");
+        setMsg(d.error ?? "Abo erforderlich");
         return;
       }
       if (!res.ok) {
@@ -58,7 +58,14 @@ export default function MonitorToggle({
             : "wöchentlich · läuft bald"
           : ""}
       </span>
-      {msg && <span className="font-mono text-[10px] text-brand">{msg}</span>}
+      {msg &&
+        (msg === "Abo erforderlich" ? (
+          <a href="/pricing" className="font-mono text-[10px] text-brand underline">
+            Abo erforderlich – upgraden
+          </a>
+        ) : (
+          <span className="font-mono text-[10px] text-brand">{msg}</span>
+        ))}
     </div>
   );
 }

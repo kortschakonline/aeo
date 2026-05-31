@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/src/auth/session";
-import { getAccountScans, getMonitorsForAccount } from "@/src/db/repo";
+import { getAccountScans, getMonitorsForAccount, getAccountPlan, getSubscription } from "@/src/db/repo";
 import ScoreRing from "@/components/ScoreRing";
 import Sparkline from "@/components/Sparkline";
 import RescanButton from "@/components/RescanButton";
@@ -28,6 +28,9 @@ export default async function DashboardPage() {
   const monitorList = await getMonitorsForAccount(session.accountId);
   const monitorByDomain = new Map(monitorList.map((m) => [m.domain, m]));
 
+  const plan = await getAccountPlan(session.accountId);
+  const hasSubscription = (await getSubscription(session.accountId)) !== null;
+
   const byDomain = new Map<string, ScanRow[]>();
   for (const r of rows) {
     const list = byDomain.get(r.domain) ?? [];
@@ -42,7 +45,7 @@ export default async function DashboardPage() {
           <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-brand">Dashboard</p>
           <h1 className="mt-2 font-serif text-3xl font-medium text-ink">Deine Domains</h1>
         </div>
-        <AccountMenu email={session.email} />
+        <AccountMenu email={session.email} plan={plan} hasSubscription={hasSubscription} />
       </div>
 
       {byDomain.size === 0 ? (

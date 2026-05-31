@@ -2,8 +2,18 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import ManageBillingButton from "@/components/ManageBillingButton";
 
-export default function AccountMenu({ email }: { email: string }) {
+export default function AccountMenu({
+  email,
+  plan,
+  hasSubscription,
+}: {
+  email: string;
+  plan: "free" | "klein" | "gross";
+  hasSubscription: boolean;
+}) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
 
@@ -22,9 +32,21 @@ export default function AccountMenu({ email }: { email: string }) {
     router.refresh();
   }
 
+  const planLabel = plan === "free" ? "Gratis" : plan === "klein" ? "Klein" : "Groß";
+
   return (
-    <div className="flex items-center gap-4 text-xs">
+    <div className="flex flex-wrap items-center gap-4 text-xs">
       <span className="font-mono text-faint">{email}</span>
+      <span className="rounded-full border border-line px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.15em] text-brand">
+        {planLabel}
+      </span>
+      {hasSubscription ? (
+        <ManageBillingButton className="text-muted hover:text-ink disabled:opacity-60" />
+      ) : (
+        <Link href="/pricing" className="text-muted hover:text-ink">
+          Upgraden
+        </Link>
+      )}
       <button onClick={logout} disabled={busy} className="text-muted hover:text-ink disabled:opacity-60">
         Abmelden
       </button>
