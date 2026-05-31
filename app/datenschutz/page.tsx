@@ -138,6 +138,19 @@ export default function DatenschutzPage() {
           </section>
 
           <section>
+            <H2>Zahlungsabwicklung</H2>
+            <p className="mt-2">
+              Für kostenpflichtige Abos nutzen wir den Zahlungsdienstleister
+              Stripe (Stripe Payments Europe, Ltd.). Bei einem Abschluss werden
+              die für die Zahlung nötigen Daten (u. a. E-Mail-Adresse, Zahlungs-
+              und Rechnungsdaten) an Stripe übermittelt und dort verarbeitet.
+              Kartendaten werden ausschließlich von Stripe verarbeitet, nicht von
+              uns gespeichert. Dein Abo kannst du jederzeit über das
+              Kundenportal verwalten und kündigen.
+            </p>
+          </section>
+
+          <section>
             <H2>Deine Rechte</H2>
             <p className="mt-2">
               Du hast das Recht auf Auskunft, Berichtigung, Löschung,
