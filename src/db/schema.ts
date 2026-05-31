@@ -57,3 +57,14 @@ export const monitors = pgTable('monitors', {
   lastScore: integer('last_score'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
+
+export const subscriptions = pgTable('subscriptions', {
+  id: serial('id').primaryKey(),
+  accountId: integer('account_id').references(() => accounts.id).notNull(),
+  stripeCustomerId: text('stripe_customer_id').notNull(),
+  stripeSubscriptionId: text('stripe_subscription_id'),
+  plan: text('plan').notNull(),
+  status: text('status').notNull(),
+  currentPeriodEnd: timestamp('current_period_end'),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})

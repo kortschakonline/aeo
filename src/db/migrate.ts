@@ -77,6 +77,20 @@ export function ensureSchema(): Promise<void> {
       `)
       await db.execute(sql`CREATE UNIQUE INDEX IF NOT EXISTS monitors_account_domain_idx ON monitors (account_id, domain)`)
       await db.execute(sql`CREATE INDEX IF NOT EXISTS monitors_active_last_run_idx ON monitors (active, last_run_at)`)
+      await db.execute(sql`
+        CREATE TABLE IF NOT EXISTS subscriptions (
+          id serial PRIMARY KEY,
+          account_id integer NOT NULL REFERENCES accounts(id),
+          stripe_customer_id text NOT NULL,
+          stripe_subscription_id text,
+          plan text NOT NULL,
+          status text NOT NULL,
+          current_period_end timestamp,
+          updated_at timestamp DEFAULT now() NOT NULL
+        )
+      `)
+      await db.execute(sql`CREATE UNIQUE INDEX IF NOT EXISTS subscriptions_account_idx ON subscriptions (account_id)`)
+      await db.execute(sql`CREATE INDEX IF NOT EXISTS subscriptions_customer_idx ON subscriptions (stripe_customer_id)`)
     })().catch((e) => {
       ensured = null // bei Fehler erneut versuchen
       throw e
