@@ -24,3 +24,8 @@ export function monitorsToDeactivate(
   const sorted = [...monitors].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
   return sorted.slice(limit).map((m) => m.id)
 }
+
+export function resolvePlan(sub: { plan: Plan; status: string } | null, isComp: boolean): Plan {
+  if (isComp) return 'gross'
+  return effectivePlan(sub)
+}
