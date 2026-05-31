@@ -1,4 +1,4 @@
-import { pgTable, serial, text, integer, timestamp, jsonb } from 'drizzle-orm/pg-core'
+import { pgTable, serial, text, integer, timestamp, jsonb, boolean } from 'drizzle-orm/pg-core'
 
 export const scans = pgTable('scans', {
   id: serial('id').primaryKey(),
@@ -45,4 +45,15 @@ export const sessions = pgTable('sessions', {
   expiresAt: timestamp('expires_at').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   lastSeenAt: timestamp('last_seen_at'),
+})
+
+export const monitors = pgTable('monitors', {
+  id: serial('id').primaryKey(),
+  accountId: integer('account_id').references(() => accounts.id).notNull(),
+  domain: text('domain').notNull(),
+  url: text('url').notNull(),
+  active: boolean('active').default(true).notNull(),
+  lastRunAt: timestamp('last_run_at'),
+  lastScore: integer('last_score'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
 })

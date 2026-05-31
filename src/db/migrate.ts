@@ -63,6 +63,20 @@ export function ensureSchema(): Promise<void> {
       await db.execute(sql`CREATE INDEX IF NOT EXISTS sessions_token_hash_idx ON sessions (token_hash)`)
       await db.execute(sql`CREATE INDEX IF NOT EXISTS login_tokens_token_hash_idx ON login_tokens (token_hash)`)
       await db.execute(sql`CREATE INDEX IF NOT EXISTS scans_account_id_idx ON scans (account_id)`)
+      await db.execute(sql`
+        CREATE TABLE IF NOT EXISTS monitors (
+          id serial PRIMARY KEY,
+          account_id integer NOT NULL REFERENCES accounts(id),
+          domain text NOT NULL,
+          url text NOT NULL,
+          active boolean NOT NULL DEFAULT true,
+          last_run_at timestamp,
+          last_score integer,
+          created_at timestamp DEFAULT now() NOT NULL
+        )
+      `)
+      await db.execute(sql`CREATE UNIQUE INDEX IF NOT EXISTS monitors_account_domain_idx ON monitors (account_id, domain)`)
+      await db.execute(sql`CREATE INDEX IF NOT EXISTS monitors_active_last_run_idx ON monitors (active, last_run_at)`)
     })().catch((e) => {
       ensured = null // bei Fehler erneut versuchen
       throw e
