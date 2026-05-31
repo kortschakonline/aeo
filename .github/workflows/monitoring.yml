@@ -1,0 +1,15 @@
+name: Weekly Monitoring
+
+on:
+  schedule:
+    - cron: '0 5 * * 1' # Montag 05:00 UTC
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger monitoring run
+        run: |
+          curl -fsS -X POST https://aeo.kortschak.online/api/monitoring/run \
+            -H "Authorization: Bearer ${{ secrets.MONITORING_SECRET }}"
