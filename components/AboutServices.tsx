@@ -20,7 +20,7 @@ const STEPS = [
 
 export default function AboutServices() {
   return (
-    <section className="relative overflow-hidden border-t border-line bg-bg">
+    <section className="relative overflow-hidden border-t border-line bg-surface">
       {/* Soft background glow */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div
