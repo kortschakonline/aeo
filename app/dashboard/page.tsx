@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/src/auth/session";
-import { getAccountScans } from "@/src/db/repo";
+import { getAccountScans, getMonitorsForAccount } from "@/src/db/repo";
 import ScoreRing from "@/components/ScoreRing";
 import Sparkline from "@/components/Sparkline";
 import RescanButton from "@/components/RescanButton";
 import AccountMenu from "@/components/AccountMenu";
+import MonitorToggle from "@/components/MonitorToggle";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,6 +24,9 @@ export default async function DashboardPage() {
   if (!session) redirect("/login");
 
   const rows = (await getAccountScans(session.accountId)) as ScanRow[];
+
+  const monitorList = await getMonitorsForAccount(session.accountId);
+  const monitorByDomain = new Map(monitorList.map((m) => [m.domain, m]));
 
   const byDomain = new Map<string, ScanRow[]>();
   for (const r of rows) {
@@ -53,6 +57,7 @@ export default async function DashboardPage() {
           {[...byDomain.entries()].map(([domain, scans]) => {
             const latest = scans[0];
             const trend = [...scans].reverse().map((s) => s.total);
+            const mon = monitorByDomain.get(domain);
             return (
               <section key={domain} className="rounded-xl border border-line bg-surface p-6">
                 <div className="flex items-center justify-between gap-4">
@@ -67,6 +72,11 @@ export default async function DashboardPage() {
                   </div>
                   <div className="flex flex-col items-end gap-3">
                     <Sparkline scores={trend} />
+                    <MonitorToggle
+                      domain={domain}
+                      active={mon?.active ?? false}
+                      lastRunAt={mon?.lastRunAt ? mon.lastRunAt.toISOString() : null}
+                    />
                     <RescanButton url={latest.url} />
                   </div>
                 </div>
