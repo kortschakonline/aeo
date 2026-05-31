@@ -7,6 +7,7 @@ import {
   BrandVisibility,
   type BrandVisibilityData,
 } from "./BrandVisibility";
+import { SITE } from "@/src/config/site";
 
 interface BrandResponse {
   brandVisibility?: BrandVisibilityData | null;
@@ -303,7 +304,7 @@ export default function EmailGate({
               und Google AI deine Inhalte finden und zitieren.
             </p>
             <a
-              href="mailto:office@kortschak.online?subject=AEO%20Erstgespr%C3%A4ch"
+              href={`mailto:${SITE.email}?subject=AEO%20Erstgespr%C3%A4ch`}
               className="mt-7 inline-flex items-center gap-2 rounded-lg bg-ink px-6 py-3.5 font-sans text-sm font-semibold text-bg transition-colors hover:bg-brand-light"
             >
               Erstgespräch anfragen

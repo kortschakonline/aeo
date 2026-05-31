@@ -1,3 +1,5 @@
+import { SITE } from "@/src/config/site";
+
 const STEPS = [
   {
     no: "01",
@@ -45,6 +47,23 @@ export default function AboutServices() {
               <p className="text-sm leading-relaxed text-muted">{s.body}</p>
             </div>
           ))}
+        </div>
+
+        {/* Weitere Leistungen */}
+        <div className="mt-12 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+          <span className="font-mono text-xs uppercase tracking-[0.2em] text-faint">
+            Mehr von Kortschak
+          </span>
+          <ul className="flex flex-wrap gap-2">
+            {SITE.services.map((s) => (
+              <li
+                key={s}
+                className="rounded-full border border-line-2 px-4 py-1.5 font-mono text-xs text-muted"
+              >
+                {s}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

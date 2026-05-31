@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import HeroBackground from "@/components/HeroBackground";
 
 interface HeroProps {
   onScan: (url: string) => void;
@@ -33,15 +34,8 @@ export default function Hero({ onScan, loading, compact }: HeroProps) {
 
   return (
     <section className="relative flex min-h-[calc(100svh-3.5rem)] flex-col items-center justify-center overflow-hidden px-6 py-20">
-      {/* Atmospheric radial glow */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(60% 50% at 50% 0%, rgba(255,28,32,0.10), transparent 70%), radial-gradient(40% 40% at 80% 90%, rgba(241,135,0,0.08), transparent 70%)",
-        }}
-      />
+      {/* Interactive AI particle network */}
+      <HeroBackground />
       {/* faint grid */}
       <div
         aria-hidden
@@ -58,12 +52,6 @@ export default function Hero({ onScan, loading, compact }: HeroProps) {
       />
 
       <div className="relative z-10 flex w-full max-w-4xl flex-col items-center text-center">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/Logo_Kortschak_mono_weiss.svg"
-          alt="Kortschak"
-          className="animate-fade-up mb-10 h-8 w-auto sm:h-9"
-        />
         <div className="animate-fade-up flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.3em] text-brand">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-brand" />
           Answer Engine Optimization

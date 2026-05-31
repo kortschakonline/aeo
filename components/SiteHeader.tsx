@@ -12,8 +12,8 @@ export default function SiteHeader() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/Logo_Kortschak_mono_weiss.svg"
-            alt="Kortschak"
-            className="h-5 w-auto"
+            alt="Kortschak Schriften"
+            className="h-7 w-auto sm:h-8"
           />
         </Link>
         <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-faint">
