@@ -2,7 +2,8 @@ import { db } from '@/src/db/client'
 import { scans, leads, accounts, loginTokens, sessions, monitors, subscriptions } from '@/src/db/schema'
 import { eq, and, desc, sql, inArray } from 'drizzle-orm'
 import { ensureSchema } from '@/src/db/migrate'
-import { effectivePlan, type Plan } from '@/src/billing/plans'
+import { resolvePlan, type Plan } from '@/src/billing/plans'
+import { isCompEmail } from '@/src/billing/access'
 import type { ScanResult } from '@/src/engine/types'
 import type { AiAnalysis } from '@/src/ai/types'
 import type { BrandVisibility } from '@/src/ai/types'
@@ -202,12 +203,80 @@ export async function upsertSubscription(
 }
 
 export async function getAccountPlan(accountId: number): Promise<Plan> {
+  await ensureSchema()
+  const [acc] = await db.select({ email: accounts.email }).from(accounts).where(eq(accounts.id, accountId))
   const sub = await getSubscription(accountId)
-  return effectivePlan(sub ? { plan: sub.plan as Plan, status: sub.status } : null)
+  const subInput = sub ? { plan: sub.plan as Plan, status: sub.status } : null
+  return resolvePlan(subInput, acc ? isCompEmail(acc.email) : false)
 }
 
 export async function deactivateMonitors(ids: number[]): Promise<void> {
   if (ids.length === 0) return
   await ensureSchema()
   await db.update(monitors).set({ active: false }).where(inArray(monitors.id, ids))
+}
+
+// ---- Admin (Stufe 4f) ----
+
+export async function getAdminStats() {
+  await ensureSchema()
+  const rows = (await db.execute(sql`
+    SELECT
+      (SELECT count(*) FROM scans)::int AS total_scans,
+      (SELECT count(*) FROM scans WHERE created_at >= current_date)::int AS scans_today,
+      (SELECT coalesce(round(avg(total)), 0) FROM scans)::int AS avg_score,
+      (SELECT count(*) FROM leads)::int AS total_leads,
+      (SELECT count(*) FROM subscriptions WHERE status IN ('active','trialing'))::int AS active_subs
+  `)) as unknown as Array<{
+    total_scans: number; scans_today: number; avg_score: number; total_leads: number; active_subs: number
+  }>
+  const r = rows[0]
+  return {
+    totalScans: Number(r?.total_scans ?? 0),
+    scansToday: Number(r?.scans_today ?? 0),
+    avgScore: Number(r?.avg_score ?? 0),
+    totalLeads: Number(r?.total_leads ?? 0),
+    activeSubs: Number(r?.active_subs ?? 0),
+  }
+}
+
+export async function getRecentScansWithLead(limit = 100) {
+  await ensureSchema()
+  return db
+    .select({
+      id: scans.id,
+      domain: scans.domain,
+      total: scans.total,
+      createdAt: scans.createdAt,
+      leadEmail: sql<string | null>`(SELECT email FROM leads WHERE leads.scan_id = ${scans.id} ORDER BY id LIMIT 1)`,
+    })
+    .from(scans)
+    .orderBy(desc(scans.createdAt))
+    .limit(limit)
+}
+
+export async function getRecentLeads(limit = 100) {
+  await ensureSchema()
+  return db
+    .select({ email: leads.email, domain: scans.domain, createdAt: leads.createdAt })
+    .from(leads)
+    .innerJoin(scans, eq(leads.scanId, scans.id))
+    .orderBy(desc(leads.createdAt))
+    .limit(limit)
+}
+
+export async function getAccountsOverview() {
+  await ensureSchema()
+  return db
+    .select({
+      id: accounts.id,
+      email: accounts.email,
+      createdAt: accounts.createdAt,
+      plan: subscriptions.plan,
+      status: subscriptions.status,
+      monitorCount: sql<number>`(SELECT count(*) FROM monitors WHERE monitors.account_id = ${accounts.id} AND monitors.active = true)::int`,
+    })
+    .from(accounts)
+    .leftJoin(subscriptions, eq(subscriptions.accountId, accounts.id))
+    .orderBy(desc(accounts.createdAt))
 }
